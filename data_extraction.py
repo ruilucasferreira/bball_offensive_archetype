@@ -23,14 +23,13 @@ from time import sleep
 #get all names of the pages to scrap from the csv file
 stattype = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)[len(os.listdir("./NBA_Tables")):, 1]
 
-
 #a cycle for each stat
 for cnt in range(len(stattype)):
 
     #open the browser window
     service = Service(executable_path="/usr/local/bin/chromedriver-linux64/chromedriver")
     driver = webdriver.Chrome(service=service)
-    driver.get(f"https://www.nba.com/stats/players/{stattype[cnt]}?SeasonType=Regular+Season&PerMode=Totals&TypeGrouping=offensive")
+    driver.get(f"https://www.nba.com/stats/players/{stattype[cnt]}?SeasonType=Regular+Season&PerMode=Totals&TypeGrouping=offensive?DistanceRange=By+Zone")
     sleep(1)
     
     #get stat names
@@ -111,4 +110,4 @@ for cnt in range(len(stattype)):
     n = len(np.array(player_stats)[ind, :]) 
     df = pd.DataFrame(np.array(player_stats)[:, ind:], columns=head_values[ind:n])
     df.drop_duplicates(inplace=True)
-    df.to_pickle(f"./NBA_Tables/{stattype[cnt, 1]}_stats.pkl")
+    df.to_pickle(f"./NBA_Tables/{stattype[cnt]}_stats.pkl")
