@@ -7,9 +7,7 @@ Created on Wed Jul 23 14:37:49 2025
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-import pickle
 
 stat_names = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)
 
@@ -53,15 +51,16 @@ bios.HEIGHT = [round(int(s[0])*30.48 + int(s[2:])*2.54) for s in bios.HEIGHT.arr
 stat_type = "general"
 inds = np.where(stat_names[:, 0] == stat_type)[0]
 
+info = pd.read_pickle(f"./NBA_Tables/traditional_stats.pkl")[["GP", "W", "L", "MIN", "AGE", "TEAM"]]
 for ind in inds:
     df = process_df(pd.read_pickle(f"./NBA_Tables/{stat_names[ind, 1]}_stats.pkl"),
-                    info = ind==inds[0] )
+                    info = False)
     if stat_names[ind, 1] == "advanced" or stat_names[ind, 1] == "estimated-advanced":
         df.columns = [s+stat_names[ind,2] for s in df.columns]
     else:
         df.columns = ["TOTAL_"+s+stat_names[ind,2] if ("%" not in s and "AVG" not in s) else s+stat_names[ind,2] for s in df.columns]
     if ind == inds[0]:
-        TRAD = df.copy()
+        TRAD = info.join(df)
     else:
         TRAD = TRAD.join(df)
 
@@ -85,14 +84,14 @@ for ind in inds:
         PT = PT.join(pt, how="outer")
         
         
-#TRacking data    
+#Tracking data    
 stat_type = "tracking"
 inds = np.where(stat_names[:, 0] == stat_type)[0]
 
 for ind in inds:
     tk = process_df(pd.read_pickle(f"./NBA_Tables/{stat_names[ind, 1]}_stats.pkl"),
                            info=False) 
-    if stat_names[ind, 1] == "pullup" or stat_names[ind, 1] == "postup":
+    if stat_names[ind, 1] == "pullup" or stat_names[ind, 1] == "catch-shoot":
         tk['2PA'] = tk.FGA - tk['3PA']
         tk['2PM'] = tk.FGM - tk['3PM']
         tk['2P%'] = 100 * tk['2PM'] / tk['2PA'] 
@@ -140,3 +139,5 @@ shoot.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in
 #connect into a single df
 STATS = pd.concat([bios, TRAD, PT, TK, hustle, bo, shoot],
                   axis=1)
+
+STATS.to_pickle(f"./full_stats.pkl")
