@@ -38,13 +38,14 @@ data = stats[old_feats]
 data.columns = feats
 data = data.fillna(0)
 
-
+'''
 for c in feats:
     if "TOTAL" in c and c != "TOTAL_MIN":
         data[c] = 36 * data[c].values / data.MIN.values
+'''
 
 data.drop(columns=["MIN"], inplace=True)        
-data.columns = data.columns.str.replace('TOTAL', 'PER36')
+#data.columns = data.columns.str.replace('TOTAL', 'PER36')
 
 Z = (data - data.mean()) / (data.std())
 

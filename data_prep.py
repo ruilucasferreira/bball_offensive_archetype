@@ -147,4 +147,10 @@ STATS = bios.join(TRAD.join(PT.join(TK.join(hustle.join(bo.join(shoot, how="oute
 
 STATS.loc["Jaylen Wells", "WEIGHT"] = 93
 
+for c in STATS.columns:
+    if "TOTAL" in c:
+        STATS[c] = 36 * STATS[c].values / STATS.MIN.values
+
+STATS.columns = STATS.columns.str.replace('TOTAL', 'PER36')
+
 STATS.to_pickle(f"./full_stats.pkl")
