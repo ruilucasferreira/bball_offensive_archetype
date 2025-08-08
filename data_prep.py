@@ -51,7 +51,8 @@ bios.HEIGHT = [round(int(s[0])*30.48 + int(s[2:])*2.54) for s in bios.HEIGHT.arr
 stat_type = "general"
 inds = np.where(stat_names[:, 0] == stat_type)[0]
 
-info = pd.read_pickle(f"./NBA_Tables/traditional_stats.pkl")[["GP", "W", "L", "MIN", "AGE", "TEAM"]]
+info = pd.read_pickle(f"./NBA_Tables/traditional_stats.pkl")[["PLAYER", "GP", "W", "L", "MIN", "AGE", "TEAM"]]
+info = process_df(info)
 for ind in inds:
     df = process_df(pd.read_pickle(f"./NBA_Tables/{stat_names[ind, 1]}_stats.pkl"),
                     info = False)
@@ -137,7 +138,13 @@ shoot = process_df(shoot, info=False)
 shoot.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in shoot.columns]
 
 #connect into a single df
-STATS = pd.concat([bios, TRAD, PT, TK, hustle, bo, shoot],
-                  axis=1)
+STATS = bios.join(TRAD.join(PT.join(TK.join(hustle.join(bo.join(shoot, how="outer"), 
+                                                        how="outer"), 
+                                            how="outer"), 
+                                    how="outer"), 
+                             how="outer"),
+                  how="outer")
+
+STATS.loc["Jaylen Wells", "WEIGHT"] = 93
 
 STATS.to_pickle(f"./full_stats.pkl")
