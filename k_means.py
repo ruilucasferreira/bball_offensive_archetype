@@ -24,6 +24,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 
+OMP_NUM_THREADS=2
+
 n = 4
 m = 8
 stats = pd.read_pickle("./full_stats.pkl")
