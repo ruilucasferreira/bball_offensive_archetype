@@ -192,7 +192,16 @@ def examples(j, num=3, n_clusters=4):
         print(f"{num-i}º - {p} ({values[i]:.3f})")
     
     
-stats[["CLUSTER4", "CLUSTER8"]].to_pickle("./kcluster_labels.pkl")
+#stats[["CLUSTER4", "CLUSTER8"]].to_pickle("./kcluster_labels.pkl")
     
 #stats.to_excel("./stats_with_kcluster.xlsx")
-stats.to_excel("./Stats_Tables/kcluster_labels.xlsx")
+
+writer = pd.ExcelWriter('./stats.xlsx', mode='a', engine='openpyxl') 
+
+print(writer) 
+stats[["CLUSTER4", "CLUSTER8"]].to_excel(writer, 
+                                        sheet_name='kclusters')
+
+writer.close()
+
+#stats.to_excel("./Stats_Tables/kcluster_labels.xlsx")
