@@ -46,6 +46,7 @@ bios.index = bios.PLAYER
 bios = bios[["WEIGHT", "HEIGHT", "DRAFT YEAR", "DRAFT NUMBER"]]
 bios.WEIGHT = round(pd.to_numeric(bios.WEIGHT) * 0.4536, 1)
 bios.HEIGHT = [round(int(s[0])*30.48 + int(s[2:])*2.54) for s in bios.HEIGHT.array]
+bios.to_excel(f"./Stats_Tables/{stat_name}_stats.xlsx")
 
 #General statistics
 stat_type = "general"
@@ -53,6 +54,7 @@ inds = np.where(stat_names[:, 0] == stat_type)[0]
 
 info = pd.read_pickle(f"./NBA_Tables/traditional_stats.pkl")[["PLAYER", "GP", "W", "L", "MIN", "AGE", "TEAM"]]
 info = process_df(info)
+info.to_excel(f"./Stats_Tables/info_stats.xlsx")
 for ind in inds:
     df = process_df(pd.read_pickle(f"./NBA_Tables/{stat_names[ind, 1]}_stats.pkl"),
                     info = False)
@@ -64,6 +66,7 @@ for ind in inds:
         TRAD = info.join(df)
     else:
         TRAD = TRAD.join(df)
+    df.to_excel(f"./Stats_Tables/{stat_names[ind, 1]}_stats.xlsx")
 
 
 
@@ -85,6 +88,7 @@ for ind in inds:
         PT = pt.copy()
     else:
         PT = PT.join(pt, how="outer")
+    pt.to_excel(f"./Stats_Tables/{stat_names[ind, 1]}_stats.xlsx")
         
         
 #Tracking data    
@@ -110,6 +114,7 @@ for ind in inds:
         TK = tk.copy()
     else:
         TK = TK.join(tk, how="outer")
+    df.to_excel(f"./Stats_Tables/{stat_names[ind, 1]}_stats.xlsx")
 
 
 #categories with a single stat        
@@ -118,13 +123,13 @@ stat_name = "hustle"
 hustle = process_df(pd.read_pickle(f"./NBA_Tables/{stat_name}_stats.pkl"), 
                   info=False)
 hustle.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in hustle.columns]
-
+hustle.to_excel(f"./Stats_Tables/{stat_name}_stats.xlsx")
 
 stat_name = "box-outs"
 bo = process_df(pd.read_pickle(f"./NBA_Tables/{stat_name}_stats.pkl"), 
                   info=False)
 bo.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in bo.columns]
-
+bo.to_excel(f"./Stats_Tables/{stat_name}_stats.xlsx")
 
 stat_name = "shooting"
 shoot = pd.read_pickle(f"./NBA_Tables/{stat_name}_stats.pkl")
@@ -138,6 +143,7 @@ shoot.columns = np.array(["PLAYER", "TEAM", "AGE",
                           "FGM_ATB3", "FGA_ATB3", "FG%_ATB3"])
 shoot = process_df(shoot, info=False)
 shoot.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in shoot.columns]
+shoot.to_excel(f"./Stats_Tables/{stat_name}_stats.xlsx")
 
 #connect into a single df
 STATS = bios.join(TRAD.join(PT.join(TK.join(hustle.join(bo.join(shoot, how="outer"), 

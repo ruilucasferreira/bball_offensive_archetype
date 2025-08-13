@@ -194,4 +194,5 @@ def examples(j, num=3, n_clusters=4):
     
 stats[["CLUSTER4", "CLUSTER8"]].to_pickle("./kcluster_labels.pkl")
     
-stats.to_excel("./stats_with_kcluster.xlsx")
+#stats.to_excel("./stats_with_kcluster.xlsx")
+stats.to_excel("./Stats_Tables/kcluster_labels.xlsx")
