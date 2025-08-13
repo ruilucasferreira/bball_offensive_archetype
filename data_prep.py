@@ -74,6 +74,8 @@ inds = np.where(stat_names[:, 0] == stat_type)[0]
 for ind in inds:
     pt = process_df(pd.read_pickle(f"./NBA_Tables/{stat_names[ind, 1]}_stats.pkl"),
                            info=False)
+    for c in ['FT_FREQ%', 'TOV_FREQ%', 'SF_FREQ%', 'AND_ONE_FREQ%']:
+        pt[c[:-6]] = round(pt[c] * pt.POSS)
     pt.drop(columns=["PPP", "FREQ%", 'FG%', 'EFG%', 'FT_FREQ%',
                             'TOV_FREQ%', 'SF_FREQ%', 'AND_ONE_FREQ%', 
                             'SCORE_FREQ%', 'PERCENTILE'], inplace=True)
@@ -152,5 +154,6 @@ for c in STATS.columns:
         STATS[c] = 36 * STATS[c].values / STATS.MIN.values
 
 STATS.columns = STATS.columns.str.replace('TOTAL', 'PER36')
+
 
 STATS.to_pickle(f"./full_stats.pkl")
