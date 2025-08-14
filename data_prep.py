@@ -47,7 +47,10 @@ def process_df(df, info=True):
 def total_to_per36(df, info):
     for c in df.columns:
         if "TOTAL" in c:
-            df[c] = 36*df[c]/info.loc[df.index.values].MIN´ 
+            df[c] = 36*df[c]/info.loc[df.index.values].MIN
+    
+    df.columns = df.columns.str.replace('TOTAL', 'PER36')
+
     return df
 
 #Get biological information
@@ -73,11 +76,11 @@ for ind in inds:
         df.columns = [s+stat_names[ind,2] for s in df.columns]
     else:
         df.columns = ["TOTAL_"+s+stat_names[ind,2] if ("%" not in s and "AVG" not in s) else s+stat_names[ind,2] for s in df.columns]
+    df = total_to_per36(df, info)
     if ind == inds[0]:
         TRAD = info.join(df)
     else:
         TRAD = TRAD.join(df)
-    df = total_to_per36(df, info)
     df.to_excel(writer, sheet_name=f"{stat_names[ind, 1]}", engine='openpyxl')
 
 
@@ -96,11 +99,11 @@ for ind in inds:
                             'SCORE_FREQ%', 'PERCENTILE'], inplace=True)
     pt = pt.groupby("PLAYER").sum()        
     pt.columns = ["TOTAL_"+s+stat_names[ind,2] if ("%" not in s and "AVG" not in s) else s+stat_names[ind,2] for s in pt.columns]
+    pt = total_to_per36(pt, info)
     if ind == inds[0]:
         PT = pt.copy()
     else:
         PT = PT.join(pt, how="outer")
-    pt = total_to_per36(pt, info)
     pt.to_excel(writer, sheet_name=f"{stat_names[ind, 1]}", engine='openpyxl')
         
         
@@ -123,11 +126,11 @@ for ind in inds:
         tk.columns = ["TOTAL_"+s if ("%" not in s and "AVG" not in s) else s for s in v]
     else:
         tk.columns = ["TOTAL_"+s+stat_names[ind,2] if ("%" not in s and "AVG" not in s) else s+stat_names[ind,2] for s in tk.columns]
+    tk = total_to_per36(tk, info)
     if ind == inds[0]:
         TK = tk.copy()
     else:
         TK = TK.join(tk, how="outer")
-    tk = total_to_per36(tk, info)
     tk.to_excel(writer, sheet_name=f"{stat_names[ind, 1]}", engine='openpyxl')
 
 
@@ -173,12 +176,5 @@ STATS = bios.join(TRAD.join(PT.join(TK.join(hustle.join(bo.join(shoot, how="oute
                   how="outer")
 
 STATS.loc["Jaylen Wells", "WEIGHT"] = 93
-
-for c in STATS.columns:
-    if "TOTAL" in c:
-        STATS[c] = 36 * STATS[c].values / STATS.MIN.values
-
-STATS.columns = STATS.columns.str.replace('TOTAL', 'PER36')
-
 
 STATS.to_pickle(f"./full_stats.pkl")
