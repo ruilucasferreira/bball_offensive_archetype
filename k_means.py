@@ -23,8 +23,9 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
+import os
+os.environ["OMP_NUM_THREADS"] = '2'
 
-OMP_NUM_THREADS=2
 
 n = 4
 m = 8
@@ -67,6 +68,7 @@ for k in range(2, 40):
     sil.append(silhouette_score(Z, kmeans.fit_predict(Z)))
     
 #visualize results
+'''
 fig=plt.figure()
 ax=fig.add_subplot(111, label="1")
 ax2=fig.add_subplot(111, label="2", frame_on=False)
@@ -86,6 +88,7 @@ ax2.tick_params(axis='y', colors="C1")
 plt.title("Elbow plot", fontsize=30)
 ax.vlines([4, 8], 3000, 12000, "gray", alpha=0.5)
 plt.show()
+'''
 
 kmeans4 = KMeans(init="random", n_clusters=n, n_init=10, random_state=1)
 kmeans4.fit(Z)
@@ -121,7 +124,7 @@ stats["ARCHETYPE8"] = (stats.CLUSTER8).replace(types8)
 stats["OFFRTG_DIFF"] = stats.OFFRTG_ADV - np.mean(stats.OFFRTG_ADV)
 
 
-
+'''
 sns.boxplot(data=stats, y="OFFRTG_DIFF", x="ARCHETYPE4")
 sns.swarmplot(data=stats, y="OFFRTG_DIFF", x="ARCHETYPE4",
               size=4, edgecolor='black', linewidth=1)
@@ -137,6 +140,7 @@ plt.xticks(rotation=45, ha='right')
 plt.ylabel("Offensive Rating against NBA average")
 plt.xlabel("")
 plt.show()
+'''
 
 #diffs = np.round( 100 * ( centers - Z.mean().values ) / Z.mean().values )
 
