@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jul 22 19:36:02 2025
-
+ 
 @author: ruilucasferreira
 """
 import pytest
