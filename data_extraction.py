@@ -19,12 +19,15 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from time import sleep
 
+season = "2022-23"
 
+
+if str( int(season[:4])+1 ) not in os.listdir("./NBA_Tables/"):
+    os.mkdir(f"./NBA_Tables/{int(season[:4])+1}")
 
 #get all names of the pages to scrap from the csv file
-stattype = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)[len(os.listdir("./NBA_Tables/2024/")):, 1]
+stattype = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)[len(os.listdir(f"./NBA_Tables/{int(season[:4])+1}/")):, 1]
 
-season = "2023-24"
 #a cycle for each stat
 for cnt in range(len(stattype)):
     print(f"\n{stattype[cnt]}\n")
@@ -121,4 +124,4 @@ for cnt in range(len(stattype)):
     n = len(np.array(player_stats)[ind, :]) 
     df = pd.DataFrame(np.array(player_stats)[:, ind:], columns=head_values[ind:n])
     df.drop_duplicates(inplace=True)
-    df.to_pickle(f"./NBA_Tables/2024/{stattype[cnt]}_stats.pkl")
+    df.to_pickle(f"./NBA_Tables/int(season[:4])+1/{stattype[cnt]}_stats.pkl")
