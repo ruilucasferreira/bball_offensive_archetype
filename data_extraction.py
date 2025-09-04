@@ -20,18 +20,47 @@ from selenium import webdriver
 from time import sleep
 
 
-#get all names of the pages to scrap from the csv file
-stattype = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)[len(os.listdir("./NBA_Tables")):, 1]
 
+#get all names of the pages to scrap from the csv file
+stattype = np.loadtxt("./stats_names.csv", delimiter=',', dtype=str)[len(os.listdir("./NBA_Tables/2024/")):, 1]
+
+season = "2023-24"
 #a cycle for each stat
 for cnt in range(len(stattype)):
-
+    print(f"\n{stattype[cnt]}\n")
     #open the browser window
     service = Service(executable_path="/usr/local/bin/chromedriver-linux64/chromedriver")
     driver = webdriver.Chrome(service=service)
-    driver.get(f"https://www.nba.com/stats/players/{stattype[cnt]}?SeasonType=Regular+Season&PerMode=Totals&TypeGrouping=offensive?DistanceRange=By+Zone")
-    sleep(1)
+    driver.get(f"https://www.nba.com/stats/players/{stattype[cnt]}?SeasonType=Regular+Season&PerMode=Totals&TypeGrouping=offensive&DistanceRange=By+Zone&Season={season}")
+    sleep(10)
+
+
     
+    click1 = False
+    click2 = False
+    xpath_1_1 = "/html/body/div[3]/div[2]/div/div[1]/div/div[2]/div/button[2]"
+    xpath_1_2 = "/html/body/div[2]/div[2]/div/div[1]/div/div[2]/div/button[2]"
+    xpath_2 = "/html/body/div[2]/div[2]/div[2]/div[2]/div[2]/button[1]"
+    temp = 0
+    while True:
+        if not click1:
+            if len(driver.find_elements(By.XPATH, xpath_1_1)) > 0:
+                driver.find_element(By.XPATH, xpath_1_1).click()
+                click1 = True
+            elif len(driver.find_elements(By.XPATH, xpath_1_2)) > 0:
+                driver.find_element(By.XPATH, xpath_1_2).click()
+                click1 = True
+        if not click2:
+            if len(driver.find_elements(By.XPATH, xpath_2)) > 0:
+                driver.find_element(By.XPATH, xpath_2).click()
+                click2 = True
+        if click1 and click2 or temp > 10:
+            break
+        inc = np.random.rand()/5
+        sleep(inc)
+        temp += inc 
+
+
     #get stat names
     head = driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[3]/table/thead")
     heads = head.find_elements(By.TAG_NAME, "th")
@@ -39,7 +68,6 @@ for cnt in range(len(stattype)):
     for h in heads:
         head_values.append(h.text)
         
-    
     #get number of players (rows) available
     num = driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[2]/div[1]/div[1]")
     num = int(num.text[:-5])
@@ -52,23 +80,6 @@ for cnt in range(len(stattype)):
         sleep(0.25+np.random.rand()/2)
         #if the site is opened for the first time, it will show up 
         #terms of consent for cookies and for data treatment
-        if temp == 0:
-            #click accept cookies
-            if len(driver.find_elements(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')) != 0:
-                sleep(2)
-                cookie = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-                cookie.click()
-                sleep(2)
-                driver.refresh()
-                sleep(2)
-            #click accept data treatment
-            if len(driver.find_elements(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[2]/div[2]/button[2]')) != 0:
-                consent = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[2]/div[2]/button[2]')
-                consent.click()
-                sleep(0.5)
-                double_consent = driver.find_element(By.XPATH, "/html/body/div[2]/div[2]/div[3]/div[3]/div[2]/button[2]")
-                double_consent.click()
-                sleep(0.5)
                 
         #get full stats table
         body = driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[3]/section[2]/div/div[2]/div[3]/table/tbody")
@@ -110,4 +121,4 @@ for cnt in range(len(stattype)):
     n = len(np.array(player_stats)[ind, :]) 
     df = pd.DataFrame(np.array(player_stats)[:, ind:], columns=head_values[ind:n])
     df.drop_duplicates(inplace=True)
-    df.to_pickle(f"./NBA_Tables/{stattype[cnt]}_stats.pkl")
+    df.to_pickle(f"./NBA_Tables/2024/{stattype[cnt]}_stats.pkl")
