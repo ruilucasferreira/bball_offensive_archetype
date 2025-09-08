@@ -18,6 +18,8 @@ from selenium.webdriver.chrome.service import Service
 #from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from time import sleep
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 season = "2022-23"
 
@@ -33,7 +35,7 @@ for cnt in range(len(stattype)):
     print(f"\n{stattype[cnt]}\n")
     #open the browser window
     service = Service(executable_path="/usr/local/bin/chromedriver-linux64/chromedriver")
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get(f"https://www.nba.com/stats/players/{stattype[cnt]}?SeasonType=Regular+Season&PerMode=Totals&TypeGrouping=offensive&DistanceRange=By+Zone&Season={season}")
     sleep(10)
 
@@ -124,4 +126,4 @@ for cnt in range(len(stattype)):
     n = len(np.array(player_stats)[ind, :]) 
     df = pd.DataFrame(np.array(player_stats)[:, ind:], columns=head_values[ind:n])
     df.drop_duplicates(inplace=True)
-    df.to_pickle(f"./NBA_Tables/int(season[:4])+1/{stattype[cnt]}_stats.pkl")
+    df.to_pickle(f"./NBA_Tables/{int(season[:4])+1}/{stattype[cnt]}_stats.pkl")
