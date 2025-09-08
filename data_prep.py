@@ -88,6 +88,7 @@ for s in seasons:
         all_info = info.copy()
     else:
         all_info = pd.concat([all_info, info], axis=0)
+    all_info.to_excel(writer, sheet_name=f"info", engine='openpyxl')
 
 for ind in inds:
     for s in seasons:

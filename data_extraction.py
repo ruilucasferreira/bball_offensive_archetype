@@ -21,7 +21,7 @@ from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-season = "2022-23"
+season = "2021-22"
 
 
 if str( int(season[:4])+1 ) not in os.listdir("./NBA_Tables/"):
