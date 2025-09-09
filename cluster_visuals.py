@@ -9,7 +9,7 @@ plt.rcParams["ytick.labelsize"] = 8
 plt.rcParams["axes.labelsize"] = 10
 
 
-def examples(Z, j, centers, num=3, n_clusters=4):
+def examples(Z, data, j, centers, num=3, n_clusters=4):
     clus = "CLUSTER"+str(n_clusters)
         
     three_closest_in = Z[data[clus]==j].iloc[ np.argsort( ((Z[data[clus]==j] - centers[j])**2).mean(axis=1) ) ].index
@@ -39,7 +39,7 @@ def examples(Z, j, centers, num=3, n_clusters=4):
     for i, p in enumerate( three_farthest_out[-num:] ): 
         print(f"{num-i}º - {p} - {values[i]:.3f}")
 
-def diff_plot(cluster, centers):
+def diff_plot(Z, cluster, centers):
     diff = centers[cluster]
     inds = np.argsort( diff )[::-1]
     plt.figure(figsize=(25, 12))
